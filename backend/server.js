@@ -24,7 +24,7 @@ app.use(express.urlencoded({extended:true}))
  // ✅ this is important for accessing image URLs
 app.use(express.static(path.join(myDir,"public")));
 
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
@@ -35,9 +35,9 @@ app.use('/api/order',orderRouter)
 //   res.send("API Working");
 // });
 
-app.get('/', (req, res) => {
-    res.render('upload');
-});
+// app.get('/', (req, res) => {
+//     res.render('upload');
+// });
 
 // app.post('/uploads', upload.fields([
 //     { name: 'image1', maxCount: 1 },
