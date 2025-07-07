@@ -16,6 +16,7 @@ import SearchBar from './components/SearchBar'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import { ShopContext } from './context/ShopContext'
+import MyProfile from './pages/MyProfile'
 const App = () => {
  
   const { token, navigate } = useContext(ShopContext);
@@ -36,6 +37,8 @@ const App = () => {
    <Route path='/Login' element={<Login/>}/>
    <Route path='/orders' element={<Orders/>}/>
    <Route path='/about' element={<About/>}/>
+   <Route path='/Profile' element={<MyProfile/>}/>
+
      </Routes>
      <Footer/>
     </div>

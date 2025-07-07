@@ -10,6 +10,7 @@ import Login from './components/Login'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react'
+import AdminTransactions from './pages/AdminTransactions'
 export const currency="$";
 export const backendUrl= import. meta.env.VITE_BACKEND_URL;
 
@@ -38,6 +39,7 @@ const App = () => {
     <Route path='/add' element={<Add token={token}/>} />
     <Route path='/list' element={<List token={token}/>} />
     <Route path='/orders' element={<Orders token={token}/>} />
+    <Route path='/transactions' element={<AdminTransactions token={token}/>} />
   </Routes>
 </div>
 
