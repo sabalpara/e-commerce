@@ -10,7 +10,7 @@ import Login from './components/Login'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react'
-import AdminTransactions from './pages/AdminTransactions'
+
 // src/constants.js
 export const currency = "$";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
