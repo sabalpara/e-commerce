@@ -11,8 +11,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react'
 import AdminTransactions from './pages/AdminTransactions'
-export const currency="$";
-export const backendUrl= import. meta.env.VITE_BACKEND_URL;
+// src/constants.js
+export const currency = "$";
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 
 const App = () => {
   const[token,setToken]=useState(localStorage.getItem('token')?localStorage.getItem('token'):'');
