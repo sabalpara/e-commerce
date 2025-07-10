@@ -1,158 +1,96 @@
+import React, { useContext, useEffect, useState } from 'react';
+import { ShopContext } from '../context/ShopContext';
+import Title from '../components/Title';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { backendUrl, currency } from "../App";
-import { assets } from "../assets/assets";
+const Orders = () => {
+  const { backendUrl, token, currency } = useContext(ShopContext);
+  const [orderData, setOrderData] = useState([]);
+  const navigate = useNavigate();
 
-const Orders = ({ token }) => {
-  const [orders, setOrders] = useState([]);
-
-  const fetchAllOrders = async () => {
-    if (!token) return;
-
+  const loadOrderData = async () => {
     try {
-      const { data } = await axios.post(
-        `${backendUrl}/api/order/list`,
+      if (!token) return;
+
+      const response = await axios.post(
+        `${backendUrl}/api/order/userorders`,
         {},
         { headers: { token } }
       );
 
-      if (data.succes) {
-        setOrders(data.orders);
-      } else {
-        toast.error(data.message);
+      if (response.data.success) {
+        const allOrderItem = [];
+
+        response.data.orders.forEach((order) => {
+          order.items.forEach((item) => {
+            item.status = order.status;
+            item.payment = order.payment;
+            item.paymentMethod = order.paymentMethod;
+            item.date = order.date;
+            allOrderItem.push(item);
+          });
+        });
+
+        setOrderData(allOrderItem.reverse());
       }
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message);
+    } catch (error) {
+      console.error("Failed to load orders:", error);
     }
   };
 
-  const statusHandler= async(e,orderId)=>{
-      
-    try {
-      
-      const response=await axios.post(backendUrl+'/api/order/status',{orderId,status:e.target.value},{headers:{token}})
-      if(response.data.success){
-        await fetchAllOrders()
-      }
-      
-    } catch (error) {
-      console.log(error);
-      toast.error(response.data.message)
-      
-    }
-      
-    }
-  
   useEffect(() => {
-    fetchAllOrders();
+    loadOrderData();
   }, [token]);
 
   return (
-    <section className="min-h-screen px-4 py-10 bg-gray-50 sm:px-8">
-      <h1 className="mb-8 text-2xl font-semibold tracking-tight text-gray-800">
-        Orders
-      </h1>
-
-      {/* ------- Orders List ------- */}
-      <div className="space-y-6">
-        {orders.map((order) => (
-          <div
-            key={order._id}
-            className="p-6 transition-shadow bg-white border border-gray-200 shadow-sm rounded-2xl hover:shadow-md"
-          >
-            {/* top row */}
-            <div className="flex items-center gap-4">
-              <img
-                src={assets.parcel_icon}
-                alt="parcel"
-                className="w-10 h-10 shrink-0"
-              />
-
-              <div className="flex-1">
-                {/* product list */}
-                {order.items.map((item, idx) => (
-                  <p
-                    key={idx}
-                    className="text-sm text-gray-700 first:mt-0 mt-0.5"
-                  >
-                    {item.name} × {item.quantity}
-                    <span className="ml-1 text-xs text-gray-500">
-                      ({item.size})
-                    </span>
-                    {idx !== order.items.length - 1 && <span>, </span>}
-                  </p>
-                ))}
-
-                {/* amount */}
-                <p className="mt-2 text-lg font-medium text-gray-900">
-                  {currency}
-                  {order.amount}
-                </p>
-              </div>
-
-              {/* status */}
-              <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center">
-                <span
-                  className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                    order.payment
-                      ? "bg-emerald-100 text-emerald-600"
-                      : "bg-amber-100 text-amber-600"
-                  }`}
-                >
-                  {order.payment ? "Paid" : "Pending"}
-                </span>
-
-                <select value={order.status} onChange={(e)=>statusHandler(e,order._id)}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 focus:border-black focus:outline-none"
-                  
-                >
-                  <option value='Order Placed'>Order Placed</option>
-                  <option value='Packing'>Packing</option>
-                  <option value='Shipped'>Shipped</option>
-                  <option value='Out for delivery'>Out for delivery</option>
-                  <option value='Delivered'>Delivered</option>
-                </select>
-              </div>
-            </div>
-
-            {/* divider */}
-            <hr className="my-4 border-dashed" />
-
-            {/* address & meta */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-0.5 text-sm">
-                <p className="font-medium text-gray-800">
-                  {order.address.firstName} {order.address.lastName}
-                </p>
-                <p className="text-gray-600">{order.address.street}</p>
-                <p className="text-gray-600">
-                  {order.address.city}, {order.address.state},{" "}
-                  {order.address.zipcode}
-                </p>
-                <p className="text-gray-600">{order.address.country}</p>
-                <p className="text-gray-600">{order.address.phone}</p>
-              </div>
-
-              <div className="space-y-0.5 text-sm sm:text-right">
-                <p className="text-gray-600">
-                  Items&nbsp;:&nbsp;{order.items.length}
-                </p>
-                <p className="text-gray-600">
-                  Method&nbsp;:&nbsp;{order.paymentMethod}
-                </p>
-                <p className="text-gray-600">
-                  Date&nbsp;:&nbsp;
-                  {new Date(order.date).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="pt-16 border-t">
+      <div className="text-2xl">
+        <Title text1="MY" text2="ORDERS" />
       </div>
-    </section>
+
+      <div>
+        {orderData.length === 0 ? (
+          <p className="mt-10 text-gray-500 text-center">No orders found.</p>
+        ) : (
+          orderData.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-4 py-4 text-sm text-gray-700 border-t border-b sm:flex-row md:flex-row md:items-center md:justify-between"
+            >
+              <div className="flex items-start gap-6">
+                <img className="w-16 sm:w-20" src={item.image[0]} alt="" />
+                <div>
+                  <p className="font-medium sm:text-base">{item.name}</p>
+                  <p className="text-gray-600">Price: {currency}{item.price}</p>
+                  <p>Quantity: {item.quantity}</p>
+                  <p>Size: {item.size}</p>
+                  <p className="mt-2">
+                    Date: <span className="text-gray-400">{new Date(item.date).toDateString()}</span>
+                  </p>
+                  <p className="mt-1">
+                    Payment: <span className="text-gray-400">{item.paymentMethod}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-between md:w-1/2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <p className="text-sm md:text-base">{item.status}</p>
+                </div>
+                <button
+                  onClick={() => navigate("/track-order", { state: { item } })}
+                  className="px-4 py-2 text-sm font-medium border rounded hover:bg-gray-50"
+                >
+                  Track Order
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 };
 
