@@ -17,6 +17,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import { ShopContext } from './context/ShopContext'
 import MyProfile from './pages/MyProfile'
+import Verify from './pages/Verify'
+import Wishlist from './pages/wishlist'
+import TrackOrder from './pages/TrackOrder'
+Wishlist
 const App = () => {
  
   const { token, navigate } = useContext(ShopContext);
@@ -38,6 +42,9 @@ const App = () => {
    <Route path='/orders' element={<Orders/>}/>
    <Route path='/about' element={<About/>}/>
    <Route path='/Profile' element={<MyProfile/>}/>
+   <Route path='/verify' element={<Verify/>}/>
+   <Route path='/wishlist' element={<Wishlist/>}/>
+   <Route path='/track-order' element={<TrackOrder/>}/>
 
      </Routes>
      <Footer/>

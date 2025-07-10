@@ -2,6 +2,7 @@
 // function for add product
 import {v2 as cloudinary} from 'cloudinary';
 import ProductModel from '../models/productModel.js';
+import productModel from '../models/productModel.js';
 const addProduct=  async(req,res)=>{
 try {
 
@@ -40,7 +41,8 @@ try {
         bestSeller:bestSeller==="true"?true:false,
         sizes:JSON.parse(sizes),
         image:images_url,
-        date:Date.now()
+        date:Date.now(),
+        reviews: []
     }
 
     const product=new ProductModel(product_data)
@@ -112,4 +114,34 @@ const singleProduct=  async(req,res)=>{
     }
 }
 
-export {listProducts,addProduct,removProducts,singleProduct}
+const addReview= async (req,res)=>{
+  try {
+    console.log("hiiii");
+    
+    const {email,productId,rating,comment}=req.body;
+    const product=await productModel.findById(productId);
+    console.log(product.reviews);
+    
+    await productModel.findByIdAndUpdate(productId,{
+        $push:{
+            reviews: {
+            email,
+            comment,
+            star:rating,
+            date: new Date()
+          }
+        }
+    })
+    console.log(product.reviews);
+    
+   
+    
+    res.json({success:true,message:"Thanks for your comment"});
+  } catch (error) {
+     console.log(error);
+        
+ res.json({success:false, message:error})
+  }
+}
+
+export {listProducts,addProduct,removProducts,singleProduct,addReview}

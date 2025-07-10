@@ -5,7 +5,9 @@ import {
   placeOrderRazorpay,
   allOrders,
   userOrders,
-  updateStatus
+  updateStatus,
+  varifystripe,
+  verifyRazorpay
 } from '../controllers/orderController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
@@ -23,5 +25,9 @@ orderRouter.post('/razorpay', authUser, placeOrderRazorpay);
 
 // User Feature
 orderRouter.post('/userorders', authUser, userOrders);
+
+orderRouter.post('/verifyStripe', authUser, varifystripe);
+
+orderRouter.post('/verifyRazorpay', authUser, verifyRazorpay);
 
 export default orderRouter;

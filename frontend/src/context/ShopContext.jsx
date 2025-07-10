@@ -20,36 +20,92 @@ const ShopContextProvider = (props) => {
    const[cartItems,setCartItems]=useState({});
     const[products,setProducts]=useState([]);
     const[token,setToken]=useState('');
+    
+    const[subscribed,setSubscribed]=useState(false);
    const navigate=useNavigate();
-   
-  let productDataPromiseResolve;
-  function compareCartItems(a, b) {
-  const keysA = Object.keys(a);
-  const keysB = Object.keys(b);
-  if (keysA.length !== keysB.length) return false;
+   const[orderData,setOrderData]=useState({});
 
-  for (let key of keysA) {
-    if (!b.hasOwnProperty(key)) return false;
+   // Inside ShopContext.js (simplified)
+const [wishlist, setWishlist] = useState([]);
 
-    const sizesA = a[key];
-    const sizesB = b[key];
+const toggleWishlist = async (productId) => {
+ 
 
-    const sizeKeysA = Object.keys(sizesA);
-    const sizeKeysB = Object.keys(sizesB);
+  // If product is not in wishlist, add it to both local state and DB
+  if (!wishlist.some(item => item._id === productId)) {
+    console.log("my name is jay");
 
-    if (sizeKeysA.length !== sizeKeysB.length) return false;
+    try {
+      const res = await axios.post(`${backendUrl}/api/user/addtocart`, {
+        id: productId,
+        email:localStorage.getItem('email')
+      });
 
-    for (let size of sizeKeysA) {
-      if (!sizesB.hasOwnProperty(size)) return false;
-      if (sizesA[size] !== sizesB[size]) return false;
+      if (!res.data.success) {
+        toast.error(res.data.message || "Failed to add to wishlist");
+      }
+    } catch (err) {
+      toast.error(err.message || "Error adding to wishlist");
+    }
+  } else {
+    // If already exists, remove from local only
+    console.log("my name is jay");
+    
+
+    
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/remove`,
+        {
+          id: productId,
+          email: localStorage.getItem('email')
+        }
+      );
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   }
+  await whishlistData(); 
+};
 
-  return true;
+
+const whishlistData =async()=>{
+   const res= await axios.post(backendUrl+'/api/user/likeItem',{email:localStorage.getItem('email')})
+   //console.log(res.data);
+   
+   if(res.data.success){
+    console.log("hi");
+    
+    console.log(res.data.like);
+    
+    setWishlist(res.data.like);
+   }
 }
-const productDataPromise = new Promise((resolve) => {
-  productDataPromiseResolve = resolve;
-});
+useEffect(()=>{
+   whishlistData();  
+},[token])
+   
+   const checkSubscription=async()=>{
+      try {
+        const email=localStorage.getItem('email');
+        const response= await axios.post(backendUrl+"/api/user/IsSubscribe",{email});
+        console.log(email);
+        
+        console.log(response.data);
+        
+        if(response.data)
+       setSubscribed( response.data.status);
+      } catch (error) {
+        
+      }
+   }
+   
    const updateQuantity=async (itemId, size,quantity)=>{
   //  let cartData=structuredClone(cartItems);
   //  cartData[itemId][size]=quantity;
@@ -191,8 +247,7 @@ const productData=async ()=>{
 
     if(response.data.success){
       setProducts(response.data.products);
-      
-      productDataPromiseResolve();
+
       
     }else{
       console.log(response.data.message);
@@ -217,6 +272,19 @@ useEffect(() => {
 }, [])
 
 useEffect(() => {
+  const savedOrderData = localStorage.getItem("orderData");
+
+  if (savedOrderData) {
+    try {
+      const parsed = JSON.parse(savedOrderData);
+      setOrderData(parsed);
+    } catch (err) {
+      console.error("Invalid order data in localStorage", err);
+    }
+  }
+}, []);
+
+useEffect(() => {
   const localToken = localStorage.getItem('token');
     //console.log(token);
     
@@ -232,7 +300,11 @@ useEffect(() => {
   
 }, [cartItems, token]);
 
+useEffect(()=>{
+checkSubscription();
+console.log(subscribed+" jay ");
 
+},[token])
 
   const value = {
     products,
@@ -242,7 +314,7 @@ useEffect(() => {
     setSearch,
     showSearch ,
     navigate,
-    setShowSearch,cartItems,setCartItems,addToCart,getCartCount,updateQuantity,getCartAmount,backendUrl,token,setToken,Amount,setAmount,productDataPromise
+    setShowSearch,cartItems,setCartItems,addToCart,getCartCount,updateQuantity,getCartAmount,backendUrl,token,setToken,Amount,setAmount,subscribed,setSubscribed,orderData,setOrderData,wishlist, setWishlist,toggleWishlist,whishlistData
   };
 
 

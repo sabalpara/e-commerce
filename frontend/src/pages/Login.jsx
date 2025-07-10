@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 const Login = () => {
   
   const [currentState, setCurrentState] = useState('Login');
-  const{token,setToken,navigate,backendUrl}= useContext(ShopContext);
+  const{token,setToken,navigate,backendUrl,}= useContext(ShopContext);
   const [name,setName]=useState('');
   const[email,setEmail]=useState('');
   const[password,setPassword]=useState('');
@@ -36,7 +36,7 @@ const Login = () => {
       if(currentState==='Sign-up'){
         
         try {
-          console.log("hi my name is  jay");
+         // console.log("hi my name is  jay");
           
            const response =await axios.post(backendUrl+'/api/user/register',{name,email,password}) 
        // console.log(response.data);
@@ -46,7 +46,7 @@ const Login = () => {
             // console.log(response.data.success);
           localStorage.setItem('token',response.data.token);
           setToken(response.data.token);
-          
+          localStorage.setItem('email',email);
         
           
         
@@ -61,16 +61,20 @@ const Login = () => {
         }
        
       }else{
+       // console.log("i am in login");
+        
         try {
            const response =await axios.post(backendUrl+'/api/user/login',{email,password}) 
-       // console.log(response.data);
+         // console.log(response.data);
+        //console.log(response.data+" hi my name is jay");
         
         if(response.data.success){
             // console.log(response.data.token);
             // console.log(response.data.success);
           localStorage.setItem('token',response.data.token);
           setToken(response.data.token);
-          //console.log("i am in login"+token)
+           localStorage.setItem('email',email);
+         // console.log("i am in login"+token)
         
           
         

@@ -1,18 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext,useState,useEffect } from 'react'
 import Title from './Title';
 import { ShopContext } from '../context/ShopContext';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 const CartTotal = () => {
-    const{currency,delivery_fee,getCartAmount,cartItems}=useContext(ShopContext);
-   const [Amount,setAmount]=useState(0)
-//     useEffect(() => {
-//  setAmount(getCartAmount())
-//  console.log("my name is jay");
- 
-// }, [cartItems]);
-   
+  const { currency, delivery_fee, getCartAmount, cartItems, subscribed } = useContext(ShopContext);
+
+  const originalAmount = getCartAmount();
+  const discountedAmount = Math.floor(originalAmount * 0.8); // 20% off
+
   return (
     <div className='w-full'>
       <div className='text-2xl'>
@@ -20,11 +15,20 @@ const CartTotal = () => {
       </div>
 
       <div className='flex flex-col gap-2 mt-2 text-sm'>
-        
+
         {/* Subtotal */}
         <div className='flex justify-between'>
           <p>Subtotal</p>
-          <p>{currency} {getCartAmount()}.00</p>
+          <p>
+            {subscribed ? (
+              <>
+                <span className="mr-2 text-gray-500 line-through">{currency} {originalAmount}.00</span>
+                <span className="text-green-600">{currency} {discountedAmount}.00</span>
+              </>
+            ) : (
+              `${currency} ${originalAmount}.00`
+            )}
+          </p>
         </div>
         <hr />
 
@@ -39,7 +43,10 @@ const CartTotal = () => {
         <div className='flex justify-between'>
           <b>Total</b>
           <b>
-            {currency} {getCartAmount() === 0 ? 0 :getCartAmount() + delivery_fee}.00
+            {currency}{" "}
+            {originalAmount === 0
+              ? 0
+              : (subscribed ? discountedAmount : originalAmount) + delivery_fee}.00
           </b>
         </div>
       </div>
