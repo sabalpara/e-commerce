@@ -18,9 +18,13 @@ import 'react-toastify/dist/ReactToastify.css'
 import { ShopContext } from './context/ShopContext'
 import MyProfile from './pages/MyProfile'
 import Verify from './pages/Verify'
-import Wishlist from './pages/wishlist'
+
 import TrackOrder from './pages/TrackOrder'
-Wishlist
+import Wishlist from './pages/Wishlist123'
+
+
+
+
 const App = () => {
  
   const { token, navigate } = useContext(ShopContext);

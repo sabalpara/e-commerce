@@ -3,7 +3,7 @@ import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const Wishlist = () => {
+const Wishlist123 = () => {
   const {
     backendUrl,
     token,
@@ -78,4 +78,4 @@ const Wishlist = () => {
   );
 };
 
-export default Wishlist;
+export default Wishlist123;
